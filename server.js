@@ -8,7 +8,7 @@ const app = express();
 
 // CORS configuration to allow only localhost:5173
 const corsOptions = {
-  origin: "https://turrfzone.com/",
+  origin: ["https://turrfzone.com", "https://www.turrfzone.com"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
