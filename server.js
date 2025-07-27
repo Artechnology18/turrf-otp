@@ -8,7 +8,7 @@ const app = express();
 
 // CORS configuration to allow only localhost:5173
 const corsOptions = {
-  origin: ["https://turrfzone.com", "https://www.turrfzone.com"],
+  origin: "https://turrfzone.com",
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
@@ -56,7 +56,7 @@ function sendSms(phone, message, templateId) {
     sms: message,
   };
 
-  // console.log("Sending SMS with params:",JSON.stringify({ ...params }, null, 2));
+  console.log("Sending SMS with params:",JSON.stringify({ ...params }, null, 2));
 
   const config = {
     params: params,
@@ -75,6 +75,7 @@ Valid for 5 minutes only.
 - Team TurrfZone`;
 
   return sendSms(phone, message, "1407175315919693880");
+
 }
 
 function sendBookingConfirmation(phone, userName, dateTime) {
@@ -115,7 +116,7 @@ app.get("/", (req, res) => {
 
 // ✅ Generate or Resend OTP
 app.post("/generate", async (req, res) => {
-  // // console.log('Received OTP request:', req.body);
+  console.log('Received OTP request:', req.body);
   const { phone } = req.body;
   if (!phone) return res.status(400).json({ message: "Phone required" });
 
@@ -134,7 +135,7 @@ app.post("/generate", async (req, res) => {
 
   try {
     const response = await sendOtpSms(phone, otp);
-    // // console.log('SMS API Response:', response.data);
+    console.log('SMS API Response:', response.data);
 
     // Check if the API response indicates success
     // A numeric response (like message ID) indicates success
@@ -149,7 +150,7 @@ app.post("/generate", async (req, res) => {
       res.json({ message: "OTP sent successfully", success: true });
     } else {
       // API call succeeded but check the response
-      // console.log("SMS API returned unexpected response:", response.data);
+      console.log("SMS API returned unexpected response:", response.data);
       res.json({ message: "OTP sent successfully", success: true });
     }
   } catch (err) {
@@ -169,17 +170,17 @@ app.post("/generate", async (req, res) => {
 
 // ✅ Verify OTP
 app.post("/verify", (req, res) => {
-  // console.log("Received OTP verification request:", req.body);
+  console.log("Received OTP verification request:", req.body);
   const { phone, otp } = req.body;
   if (!phone || !otp)
     return res.status(400).json({ message: "Phone and OTP required" });
 
   const entry = otpStore.get(phone);
-  // console.log("OTP Store Entry:", entry);
+  console.log("OTP Store Entry:", entry);
   if (entry && entry.otp === otp) {
     clearTimeout(entry.timeout);
     otpStore.delete(phone);
-    // console.log(`OTP verified successfully for phone: ${phone}`);
+    console.log(`OTP verified successfully for phone: ${phone}`);
     return res
       .status(200)
       .json({ message: "OTP verified successfully", success: true });
@@ -326,12 +327,12 @@ function scheduleReminder(bookingId, phone, userName, bookingDateTime) {
 
   if (timeDiff <= thirtyMinutes) {
     // If booking is within 30 minutes, send reminder immediately
-    // console.log(`Booking ${bookingId} is within 30 minutes, sending reminder immediately`);
+    console.log(`Booking ${bookingId} is within 30 minutes, sending reminder immediately`);
     sendReminderNow(bookingId, phone, userName);
   } else {
     // If booking is more than 30 minutes away, schedule reminder for 30 minutes before
     const reminderTime = new Date(bookingDateTime.getTime() - thirtyMinutes);
-    // console.log(`Scheduling reminder for booking ${bookingId} at ${reminderTime.toLocaleString("en-IN",{ timeZone: "Asia/Kolkata" })}`);
+    console.log(`Scheduling reminder for booking ${bookingId} at ${reminderTime.toLocaleString("en-IN",{ timeZone: "Asia/Kolkata" })}`);
 
     const delay = reminderTime.getTime() - now.getTime();
     setTimeout(() => {
@@ -353,13 +354,13 @@ async function sendReminderNow(bookingId, phone, userName) {
     booking.reminderSent = true;
     bookingStore.set(bookingId, booking);
 
-    // console.log(`Reminder sent successfully for booking ${bookingId}`);
+    console.log(`Reminder sent successfully for booking ${bookingId}`);
   } catch (error) {
     console.error(`Failed to send reminder for booking ${bookingId}:`, error);
   }
 }
 
 app.listen(5126, () => {
-  // console.log("TurrfZone OTP & Booking System running on port 5126");
-  // console.log("Visit http://localhost:5126 to access the frontend");
+  console.log("TurrfZone OTP & Booking System running on port 5126");
+  console.log("Visit http://localhost:5126 to access the frontend");
 });
