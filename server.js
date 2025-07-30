@@ -363,15 +363,17 @@ async function sendReminderNow(bookingId, phone, userName) {
 }
 
 let adminOtpData = null; // { otp: '123456', timeout: setTimeout(...) }
-const ADMIN_PHONE = "8778879866";
+let ADMIN_PHONE = "8778879866";
 
 // Generate Admin OTP
 app.post("/admin/otp/generate", async (req, res) => {
   const { phone } = req.body;
-  // if (phone !== ADMIN_PHONE)
-  //   return res.status(403).json({ message: "Unauthorized admin number" });
+  ADMIN_PHONE=phone;
+  if (false)
+    return res.status(403).json({ message: "Unauthorized admin number" });
 
   // Clear previous OTP timeout if exists
+  
   if (adminOtpData) {
     clearTimeout(adminOtpData.timeout);
     adminOtpData = null;
