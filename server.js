@@ -8,7 +8,12 @@ const app = express();
 
 // CORS configuration to allow only localhost:5173
 const corsOptions = {
-  origin: ["https://turrfzone.com", "https://www.turrfzone.com","https://admin.turrfzone.com","https://www.admin.turrfzone.com"],
+  origin: [
+    "https://turrfzone.com",
+    "https://www.turrfzone.com",
+    "https://admin.turrfzone.com",
+    "https://www.admin.turrfzone.com",
+  ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
@@ -363,8 +368,8 @@ const ADMIN_PHONE = "8778879866";
 // Generate Admin OTP
 app.post("/admin/otp/generate", async (req, res) => {
   const { phone } = req.body;
-  if (phone !== ADMIN_PHONE)
-    return res.status(403).json({ message: "Unauthorized admin number" });
+  // if (phone !== ADMIN_PHONE)
+  //   return res.status(403).json({ message: "Unauthorized admin number" });
 
   // Clear previous OTP timeout if exists
   if (adminOtpData) {
