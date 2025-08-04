@@ -13,7 +13,7 @@ const corsOptions = {
     "https://www.turrfzone.com",
     "https://admin.turrfzone.com",
     "https://www.admin.turrfzone.com",
-    "http://localhost:5173",
+    "https://localhost",
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -29,7 +29,6 @@ app.use(express.static("public"));
 //   console.log(`${new Date().toISOString()} - ${req.method} ${req.originalUrl}`);
 //   next();
 // });
-
 
 const otpStore = new Map(); // key = phone, value = { otp, timeout }
 const bookingStore = new Map(); // key = bookingId, value = { phone, userName, dateTime, reminderSent }
@@ -364,7 +363,7 @@ async function sendReminderNow(bookingId, phone, userName) {
     booking.reminderSent = true;
     bookingStore.set(bookingId, booking);
 
-   // console.log(`Reminder sent successfully for booking ${bookingId}`);
+    // console.log(`Reminder sent successfully for booking ${bookingId}`);
   } catch (error) {
     //console.error(`Failed to send reminder for booking ${bookingId}:`, error);
   }
@@ -388,11 +387,11 @@ app.post("/admin/otp/generate", async (req, res) => {
   const otp = generateOtp(); // Implement this function
   const timeout = setTimeout(() => {
     adminOtpData = null;
-   // console.log("Admin OTP expired automatically.");
+    // console.log("Admin OTP expired automatically.");
   }, 180000); // 3 mins
 
   adminOtpData = { otp, timeout };
- // console.log("Generated Admin OTP:", otp);
+  // console.log("Generated Admin OTP:", otp);
 
   try {
     await sendOtpSms(phone, otp); // Implement this function
