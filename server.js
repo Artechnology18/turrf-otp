@@ -69,10 +69,10 @@ function sendSms(phone, message, templateId) {
     sms: message,
   };
 
-  console.log(
-    "Sending SMS with params:",
-    JSON.stringify({ ...params }, null, 2)
-  );
+  // console.log(
+  //   "Sending SMS with params:",
+  //   JSON.stringify({ ...params }, null, 2)
+  // );
 
   const config = {
     params: params,
@@ -80,7 +80,7 @@ function sendSms(phone, message, templateId) {
       rejectUnauthorized: false, // Skip SSL certificate validation
     }),
   };
-  console.log(config);
+  // console.log(config);
 
   return axios.get("https://smsserver.artechnology.pro/api/smsapi", config);
 }
@@ -124,10 +124,10 @@ Your TurrfZone booking has been cancelled.
 If you have any questions, call us at ${supportNumber}.
 We hope to see you back on the turf soon!`;
 
-  console.log("Sending cancellation SMS with reason:", reason);
-  console.log("Phone number:", phoneNumber);
-  console.log("Support number:", supportNumber);
-  console.log("Final message:", message);
+  // console.log("Sending cancellation SMS with reason:", reason);
+  // console.log("Phone number:", phoneNumber);
+  // console.log("Support number:", supportNumber);
+  // console.log("Final message:", message);
 
   return sendSms(phoneNumber, message, "1407175315939535080");
 }
@@ -173,7 +173,7 @@ app.post("/generate", async (req, res) => {
       res.json({ message: "OTP sent successfully", success: true });
     } else {
       // API call succeeded but check the response
-      console.log("SMS API returned unexpected response:", response.data);
+      //console.log("SMS API returned unexpected response:", response.data);
       res.json({ message: "OTP sent successfully", success: true });
     }
   } catch (err) {
@@ -193,17 +193,17 @@ app.post("/generate", async (req, res) => {
 
 // ✅ Verify OTP
 app.post("/verify", (req, res) => {
-  console.log("Received OTP verification request:", req.body);
+  //console.log("Received OTP verification request:", req.body);
   const { phone, otp } = req.body;
   if (!phone || !otp)
     return res.status(400).json({ message: "Phone and OTP required" });
 
   const entry = otpStore.get(phone);
-  console.log("OTP Store Entry:", entry);
+  //console.log("OTP Store Entry:", entry);
   if (entry && entry.otp === otp) {
     clearTimeout(entry.timeout);
     otpStore.delete(phone);
-    console.log(`OTP verified successfully for phone: ${phone}`);
+    //console.log(`OTP verified successfully for phone: ${phone}`);
     return res
       .status(200)
       .json({ message: "OTP verified successfully", success: true });
@@ -214,7 +214,7 @@ app.post("/verify", (req, res) => {
 
 // ✅ Create Booking
 app.post("/booking", async (req, res) => {
-  console.log("Recived the request: ", req.body);
+  //console.log("Recived the request: ", req.body);
   const { phone, userName, dateTime } = req.body;
 
   if (!phone || !userName || !dateTime) {
@@ -290,14 +290,14 @@ app.post("/booking/cancel", async (req, res) => {
   try {
     // Send cancellation SMS
     const result = await sendBookingCancellation(reason, phoneNumber);
-    console.log(result);
+    //console.log(result);
 
     res.json({
       message: "Booking cancelled successfully",
       success: true,
     });
   } catch (err) {
-    console.error("Cancellation Error Details:", err);
+    //console.error("Cancellation Error Details:", err);
     res
       .status(500)
       .json({ message: "Failed to cancel booking", success: false });
@@ -330,19 +330,19 @@ function scheduleReminder(bookingId, phone, userName, bookingDateTime) {
 
   if (timeDiff <= thirtyMinutes) {
     // If booking is within 30 minutes, don't send any reminder
-    console.log(
-      `Booking ${bookingId} is within 30 minutes, no reminder will be sent`
-    );
+    // console.log(
+    //   `Booking ${bookingId} is within 30 minutes, no reminder will be sent`
+    // );
     return; // Exit without scheduling any reminder
   } else {
     // If booking is more than 30 minutes away, schedule reminder for 30 minutes before
     const reminderTime = new Date(bookingDateTime.getTime() - thirtyMinutes);
-    console.log(
-      `Scheduling reminder for booking ${bookingId} at ${reminderTime.toLocaleString(
-        "en-IN",
-        { timeZone: "Asia/Kolkata" }
-      )}`
-    );
+    // console.log(
+    //   `Scheduling reminder for booking ${bookingId} at ${reminderTime.toLocaleString(
+    //     "en-IN",
+    //     { timeZone: "Asia/Kolkata" }
+    //   )}`
+    // );
 
     const delay = reminderTime.getTime() - now.getTime();
     setTimeout(() => {
@@ -364,9 +364,9 @@ async function sendReminderNow(bookingId, phone, userName) {
     booking.reminderSent = true;
     bookingStore.set(bookingId, booking);
 
-    console.log(`Reminder sent successfully for booking ${bookingId}`);
+   // console.log(`Reminder sent successfully for booking ${bookingId}`);
   } catch (error) {
-    console.error(`Failed to send reminder for booking ${bookingId}:`, error);
+    //console.error(`Failed to send reminder for booking ${bookingId}:`, error);
   }
 }
 
@@ -388,11 +388,11 @@ app.post("/admin/otp/generate", async (req, res) => {
   const otp = generateOtp(); // Implement this function
   const timeout = setTimeout(() => {
     adminOtpData = null;
-    console.log("Admin OTP expired automatically.");
+   // console.log("Admin OTP expired automatically.");
   }, 180000); // 3 mins
 
   adminOtpData = { otp, timeout };
-  console.log("Generated Admin OTP:", otp);
+ // console.log("Generated Admin OTP:", otp);
 
   try {
     await sendOtpSms(phone, otp); // Implement this function
@@ -411,7 +411,7 @@ app.post("/admin/otp/verify", (req, res) => {
   const { phone, otp } = req.body;
   if (phone !== ADMIN_PHONE)
     return res.status(403).json({ message: "Unauthorized admin number" });
-  console.log("The otp is: " + adminOtpData.otp);
+  //console.log("The otp is: " + adminOtpData.otp);
   if (adminOtpData && adminOtpData.otp === otp) {
     clearTimeout(adminOtpData.timeout);
     adminOtpData = null;
@@ -424,5 +424,5 @@ app.post("/admin/otp/verify", (req, res) => {
 });
 
 app.listen(5126, () => {
-  console.log("TurrfZone OTP & Booking System running on port 5126");
+  //console.log("TurrfZone OTP & Booking System running on port 5126");
 });
