@@ -30,6 +30,7 @@ app.use((req, res, next) => {
   next();
 });
 
+
 const otpStore = new Map(); // key = phone, value = { otp, timeout }
 const bookingStore = new Map(); // key = bookingId, value = { phone, userName, dateTime, reminderSent }
 
