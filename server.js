@@ -5,6 +5,7 @@ const path = require("path");
 const cron = require("node-cron");
 const cors = require("cors");
 const app = express();
+console.log(app.url());
 
 // CORS configuration to allow only localhost:5173
 const corsOptions = {
