@@ -24,12 +24,35 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.static("public"));
 
-// Middleware to log all incoming requests
+// Middleware to log all incoming requests with origin information
 app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.originalUrl}`);
+  const origin = req.get("Origin") || req.get("Referer") || "Direct/Unknown";
+  const host = req.get("Host") || "Unknown";
+  const userAgent = req.get("User-Agent") || "Unknown";
+
+  // Determine if it's localhost or external
+  const isLocalhost =
+    origin.includes("localhost") ||
+    host.includes("localhost") ||
+    origin.includes("127.0.0.1");
+  const domainType = isLocalhost ? "[LOCALHOST]" : "[EXTERNAL]";
+
+  console.log(
+    `${new Date().toISOString()} ${domainType} - ${req.method} ${
+      req.originalUrl
+    }`
+  );
+  console.log(`  Origin: ${origin}`);
+  console.log(`  Host: ${host}`);
+  console.log(
+    `  User-Agent: ${userAgent.substring(0, 100)}${
+      userAgent.length > 100 ? "..." : ""
+    }`
+  );
+  console.log("---");
+
   next();
 });
-
 
 const otpStore = new Map(); // key = phone, value = { otp, timeout }
 const bookingStore = new Map(); // key = bookingId, value = { phone, userName, dateTime, reminderSent }
@@ -364,7 +387,7 @@ async function sendReminderNow(bookingId, phone, userName) {
     booking.reminderSent = true;
     bookingStore.set(bookingId, booking);
 
-   // console.log(`Reminder sent successfully for booking ${bookingId}`);
+    // console.log(`Reminder sent successfully for booking ${bookingId}`);
   } catch (error) {
     //console.error(`Failed to send reminder for booking ${bookingId}:`, error);
   }
@@ -388,11 +411,11 @@ app.post("/admin/otp/generate", async (req, res) => {
   const otp = generateOtp(); // Implement this function
   const timeout = setTimeout(() => {
     adminOtpData = null;
-   // console.log("Admin OTP expired automatically.");
+    // console.log("Admin OTP expired automatically.");
   }, 180000); // 3 mins
 
   adminOtpData = { otp, timeout };
- // console.log("Generated Admin OTP:", otp);
+  // console.log("Generated Admin OTP:", otp);
 
   try {
     await sendOtpSms(phone, otp); // Implement this function
