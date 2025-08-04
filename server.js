@@ -25,10 +25,10 @@ app.use(express.json());
 app.use(express.static("public"));
 
 // Middleware to log all incoming requests
-app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.originalUrl}`);
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log(`${new Date().toISOString()} - ${req.method} ${req.originalUrl}`);
+//   next();
+// });
 
 
 const otpStore = new Map(); // key = phone, value = { otp, timeout }
