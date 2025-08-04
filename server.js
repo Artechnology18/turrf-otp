@@ -5,7 +5,6 @@ const path = require("path");
 const cron = require("node-cron");
 const cors = require("cors");
 const app = express();
-console.log(app.url());
 
 // CORS configuration to allow only localhost:5173
 const corsOptions = {
@@ -24,6 +23,12 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.static("public"));
+
+// Middleware to log all incoming requests
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.originalUrl}`);
+  next();
+});
 
 const otpStore = new Map(); // key = phone, value = { otp, timeout }
 const bookingStore = new Map(); // key = bookingId, value = { phone, userName, dateTime, reminderSent }
