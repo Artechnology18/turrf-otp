@@ -13,6 +13,7 @@ const corsOptions = {
     "https://www.turrfzone.com",
     "https://admin.turrfzone.com",
     "https://www.admin.turrfzone.com",
+    "http://localhost",
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -21,7 +22,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use(express.static("public")); // Serve static files from public directory
+app.use(express.static("public"));
 
 const otpStore = new Map(); // key = phone, value = { otp, timeout }
 const bookingStore = new Map(); // key = bookingId, value = { phone, userName, dateTime, reminderSent }
@@ -368,8 +369,8 @@ const ADMIN_PHONE = "9361070035";
 // Generate Admin OTP
 app.post("/admin/otp/generate", async (req, res) => {
   const { phone } = req.body;
-  // if (phone !== ADMIN_PHONE)
-  //   return res.status(403).json({ message: "Unauthorized admin number" });
+  if (phone !== ADMIN_PHONE)
+    return res.status(403).json({ message: "Unauthorized admin number" });
 
   // Clear previous OTP timeout if exists
   if (adminOtpData) {
